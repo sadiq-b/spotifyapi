@@ -177,3 +177,82 @@ const UIController = (function() {
 
 })();
 
+const APPController = (function(UICtrl, APICtrl) {
+
+    // get input field object ref
+    const DOMInputs = UICtrl.inputField();
+
+
+    const loadGenres = async () => {
+     
+        const token = await APICtrl.getToken();           
+        
+        UICtrl.storeToken(token);
+       
+        const genres = await APICtrl.getGenres(token);
+       
+        genres.forEach(element => UICtrl.createGenre(element.name, element.id));
+    }
+
+    // create genre change event listener
+    DOMInputs.genre.addEventListener('change', async () => {
+    
+        UICtrl.resetPlaylist();
+       
+        const token = UICtrl.getStoredToken().token;        
+        
+        const genreSelect = UICtrl.inputField().genre;       
+       
+        const genreId = genreSelect.options[genreSelect.selectedIndex].value;             
+      
+        const playlist = await APICtrl.getPlaylistByGenre(token, genreId);       
+        
+        playlist.forEach(p => UICtrl.createPlaylist(p.name, p.tracks.href));
+    });
+     
+
+    // create submit button click event listener
+    DOMInputs.submit.addEventListener('click', async (e) => {
+       
+        e.preventDefault();
+       
+        UICtrl.resetTracks();
+       
+        const token = UICtrl.getStoredToken().token;        
+       
+        const playlistSelect = UICtrl.inputField().playlist;
+        
+        const tracksEndPoint = playlistSelect.options[playlistSelect.selectedIndex].value;
+        
+        const tracks = await APICtrl.getTracks(token, tracksEndPoint);
+        
+        tracks.forEach(el => UICtrl.createTrack(el.track.href, el.track.name))
+        
+    });
+
+    // create song selection click event listener
+    DOMInputs.tracks.addEventListener('click', async (e) => {
+      
+        e.preventDefault();
+        UICtrl.resetTrackDetail();
+      
+        const token = UICtrl.getStoredToken().token;
+ 
+        const trackEndpoint = e.target.id;
+       
+        const track = await APICtrl.getTrack(token, trackEndpoint);
+        
+        UICtrl.createTrackDetail(track.album.images[2].url, track.name, track.artists[0].name);
+    });    
+
+    return {
+        init() {
+            console.log('App is starting');
+            loadGenres();
+        }
+    }
+
+})(UIController, APIController);
+
+
+APPController.init();
