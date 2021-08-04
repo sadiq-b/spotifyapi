@@ -1,7 +1,7 @@
 const APIController = (function() {
     
-    const clientId = 'add clienid';
-    const clientSecret = 'add clientsecret';
+    const x = '40bcf9d54db74734a0064a244204ec24';
+    const y= 'dbfcf4e78ff5406490498187c4712496';
     // private methods
     const _getToken = async () => {
 
@@ -9,7 +9,7 @@ const APIController = (function() {
             method: 'POST',
             headers: {
                 'Content-Type' : 'application/x-www-form-urlencoded', 
-                'Authorization' : 'Basic ' + btoa(clientId + ':' + clientSecret)
+                'Authorization' : 'Basic ' + btoa(x + ':' + y)
             },
             body: 'grant_type=client_credentials'
         });
